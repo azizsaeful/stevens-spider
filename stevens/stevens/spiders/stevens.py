@@ -8,11 +8,16 @@ class StevensSpider(scrapy.Spider):
     def start_requests(self):
         urls = 'http://www.ecountyworks.com/stevens/TaxSearchAdvanced.php'
         formdata = []
-        src2 = ["aa"]
-        src = ["aa", "ab", "ac", "ad", "ae", "af", "ag", "ah", "ai", "aj", "ak", "al", "am", "an", "ao", "ap", "aq",
-               "ar", "as", "at", "au", "av", "aw", "ax", "ay", "az"]
+        start = 1
+        end = 20000
+        combination = []
+        now = start
+        while now <= end:
+            combination.append(now)
+            now = now + 200
+        print(combination)
         dictbase = {"submit_check": "1",
-                    "searchname": "aa",
+                    "searchname": "",
                     "nametype": "Owner",
                     "searchparcel": "",
                     "loanco": "",
@@ -32,16 +37,17 @@ class StevensSpider(scrapy.Spider):
                     "lot": "",
                     "block": "",
                     "Minerals": "1"}
-        for s in src2:
-            dictbase["searchname"] = s
+        for i in combination:
+            dictbase["stmtnumfrom"] = i
+            dictbase["stmtnumthru"] = i + 199
             dicty = dict(dictbase)
             formdata.append(dicty)
         for form in formdata:
             yield scrapy.FormRequest(url=urls, formdata=form, callback=self.parse)
 
     def parse(self, response):
-        src = response.xpath("//input[@name='searchname']").attrib['value']
-        filename = f'stevens-{src}.html'
+        i = response.xpath("//input[@name='stmtnumfrom']").attrib['value']
+        filename = f'stevens-{i}to-{i+199}.html'
         with open(filename, 'wb') as f:
             f.write(response.body)
         self.log(f'Saved file {filename}')
@@ -61,5 +67,5 @@ class StevensSpider(scrapy.Spider):
                 'war red': row.xpath('td[13]/text()').get(),
                 'total due': row.xpath('td[15]/text()').get(),
                 'loan company': row.xpath('td[17]/text()').get(),
-                'search': src
+                'statement range': str(i) + " to " + str(i+199)
             }
