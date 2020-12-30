@@ -9,7 +9,7 @@ class StevensSpider(scrapy.Spider):
         urls = 'http://www.ecountyworks.com/stevens/TaxSearchAdvanced.php'
         formdata = []
         start = 1
-        end = 400
+        end = 40000
         combination = []
         now = start
         while now <= end:
@@ -59,9 +59,9 @@ class StevensSpider(scrapy.Spider):
                 'type': row.xpath('td[5]/text()').get(),
                 'parcel number': row.xpath('td[7]/a/text()').get(),
                 'property address': row.xpath('td[7]/text()').getall()[0],
-                'section': re.search(r'SECTION: (.*?) ', row.xpath('td[7]/text()').getall()[1]).group(1),
-                'township': re.search(r'TOWNSHIP: (.*?) ', row.xpath('td[7]/text()').getall()[1]).group(1),
-                'range': re.search(r'(\s(\w+)$)', row.xpath('td[7]/text()').getall()[1]).group(1).replace(' ', ''),
+                'section': re.search(r'SECTION: (.*?) ', row.xpath('td[7]/text()').getall()[1]).group(1) if row.xpath('td[7]/text()').getall()[1] else "",
+                'township': re.search(r'TOWNSHIP: (.*?) ', row.xpath('td[7]/text()').getall()[1]).group(1) if row.xpath('td[7]/text()').getall()[1] else "",
+                'range': re.search(r'(\s(\w+)$)', row.xpath('td[7]/text()').getall()[1]).group(1).replace(' ', '') if row.xpath('td[7]/text()').getall()[1] else "",
                 'owner': row.xpath('td[9]').get().replace('<td style="vertical-align:top;">', '').replace('</td>', ''),
                 'taxpayer': row.xpath('td[11]').get().replace('<td style="vertical-align:top;">', '').replace('</td>', ''),
                 'war red': row.xpath('td[13]/text()').get(),
