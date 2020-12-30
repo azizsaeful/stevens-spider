@@ -9,7 +9,7 @@ class StevensSpider(scrapy.Spider):
         urls = 'http://www.ecountyworks.com/stevens/TaxSearchAdvanced.php'
         formdata = []
         start = 1
-        end = 20000
+        end = 400
         combination = []
         now = start
         while now <= end:
@@ -38,8 +38,8 @@ class StevensSpider(scrapy.Spider):
                     "block": "",
                     "Minerals": "1"}
         for i in combination:
-            dictbase["stmtnumfrom"] = i
-            dictbase["stmtnumthru"] = i + 199
+            dictbase["stmtnumfrom"] = str(i)
+            dictbase["stmtnumthru"] = str(i+199)
             dicty = dict(dictbase)
             formdata.append(dicty)
         for form in formdata:
@@ -47,7 +47,7 @@ class StevensSpider(scrapy.Spider):
 
     def parse(self, response):
         i = response.xpath("//input[@name='stmtnumfrom']").attrib['value']
-        filename = f'stevens-{i}to-{i+199}.html'
+        filename = f'stevens-{i}to{int(i)+199}.html'
         with open(filename, 'wb') as f:
             f.write(response.body)
         self.log(f'Saved file {filename}')
@@ -67,5 +67,5 @@ class StevensSpider(scrapy.Spider):
                 'war red': row.xpath('td[13]/text()').get(),
                 'total due': row.xpath('td[15]/text()').get(),
                 'loan company': row.xpath('td[17]/text()').get(),
-                'statement range': str(i) + " to " + str(i+199)
+                'statement range': str(i) + " to " + str(int(i)+199)
             }
