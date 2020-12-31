@@ -3,10 +3,10 @@ import re
 
 
 class StevensSpider(scrapy.Spider):
-    name = "finney"
+    name = "grant"
 
     def start_requests(self):
-        urls = 'http://www.ecountyworks.com/finney/TaxSearchAdvanced.php'
+        urls = 'http://www.ecountyworks.com/grant/TaxSearchAdvanced.php'
         formdata = []
         start = 1
         end = 40000
@@ -47,7 +47,7 @@ class StevensSpider(scrapy.Spider):
 
     def parse(self, response):
         i = response.xpath("//input[@name='stmtnumfrom']").attrib['value']
-        filename = f'finney-{i}to{int(i)+199}.html'
+        filename = f'grant-{i}to{int(i)+199}.html'
         with open(filename, 'wb') as f:
             f.write(response.body)
         self.log(f'Saved file {filename}')
